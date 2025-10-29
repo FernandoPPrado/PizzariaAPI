@@ -74,4 +74,12 @@ public class Product {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }
