@@ -27,11 +27,12 @@ public class Product {
     public Product() {
     }
 
-    public Product(String productName, String description, BigDecimal price, boolean active) {
+    public Product(String productName, String description, BigDecimal price, boolean active, Category category) {
         this.productName = productName;
         this.description = description;
         this.price = price;
         this.active = active;
+        this.category = category;
     }
 
     public Integer getId() {
