@@ -18,43 +18,40 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     @Override
-    public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException)
-            throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
         logger.error("Falha de autenticação: {}", authException.getMessage());
 
-        // Análise granular: usa instanceof apenas para subclasses reais de AuthenticationException
-        // e análise de mensagem para erros JWT embrulhados (sem casts inválidos)
         String message = authException.getMessage() != null ? authException.getMessage() : "Unauthorized";
-        int status = HttpServletResponse.SC_UNAUTHORIZED; // Default 401
-        String customMessage = "Unauthorized"; // Mensagem genérica por default
+        int status = HttpServletResponse.SC_UNAUTHORIZED; // default
+        String customMessage = "Unauthorized";
 
-        if (authException instanceof BadCredentialsException || message.contains("Token inválido") || message.contains("malformed") || message.contains("invalid signature")) {
-            status = HttpServletResponse.SC_BAD_REQUEST; // 400 para token malformado/inválido
-            customMessage = "Token JWT inválido ou malformado";
-        } else if (message.contains("expired") || message.contains("Token expirado")) {
-            status = HttpServletResponse.SC_UNAUTHORIZED; // 401 para token expirado
-            customMessage = "Token JWT expirado";
-        } else if (authException.getMessage().contains("Bad credentials")) {
-            status = HttpServletResponse.SC_UNAUTHORIZED; // 401 para credenciais inválidas
-            customMessage = "Credenciais inválidas";
+        if (authException instanceof BadCredentialsException) {
+            if (message.contains("expirado")) {
+                status = HttpServletResponse.SC_UNAUTHORIZED;
+                customMessage = "Token JWT expirado";
+            } else if (message.contains("malformado")) {
+                status = HttpServletResponse.SC_BAD_REQUEST;
+                customMessage = "Token JWT malformado";
+            } else if (message.contains("Assinatura inválida")) {
+                status = HttpServletResponse.SC_UNAUTHORIZED;
+                customMessage = "Assinatura do token inválida";
+            } else if (message.contains("não suportado")) {
+                status = HttpServletResponse.SC_BAD_REQUEST;
+                customMessage = "Token JWT não suportado";
+            } else if (message.contains("vazio")) {
+                status = HttpServletResponse.SC_BAD_REQUEST;
+                customMessage = "Token JWT vazio ou ausente";
+            } else {
+                status = HttpServletResponse.SC_UNAUTHORIZED;
+                customMessage = "Credenciais inválidas";
+            }
         }
-        // Nota: Para AccessDeniedException (403), configure um AccessDeniedHandler separado na SecurityConfig,
-        // ex.: http.exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler());
-        // Não trate aqui, pois EntryPoint é só para autenticação (não autorização).
 
-        // Se for um erro interno (ex.: AuthenticationServiceException), pode propagar para handler global (500)
-        // ou forçar 401 aqui se preferir.
-
-        // Resposta customizada em JSON (útil para APIs)
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(status);
         String jsonResponse = String.format("{\"error\": \"%s\", \"status\": %d}", customMessage, status);
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
-
-        // Não usa response.sendError() para evitar forçar 401; usa setStatus() para flexibilidade
     }
 }
