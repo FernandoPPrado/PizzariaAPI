@@ -1,5 +1,9 @@
 package com.pizzaria.demo.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,11 +47,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // Validação agora lança JwtException se inválido
+                // Validação do token
                 if (jwtUtils.validateJwtToken(token)) {
-                    String username = jwtUtils.getUserNameFromJwtToken(token); // Pode lançar JwtException
+                    String username = jwtUtils.getUserNameFromJwtToken(token);
 
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Pode lançar UsernameNotFoundException (sub de AuthenticationException)
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
@@ -57,33 +61,57 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                             );
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
                     logger.debug("Autenticação definida para usuário: {}", username);
                 }
-            } catch (JwtException e) {
-                // Wrapping específico: transforma JwtException em exceções Spring Security para granularidade
-                logger.debug("Token JWT inválido: {}", e.getMessage());
-                if (e.getMessage().contains("expired")) {
-                    throw new BadCredentialsException("Token expirado", e); // 401 via EntryPoint
-                } else {
-                    throw new BadCredentialsException("Token inválido ou malformado", e); // 400/401 via EntryPoint
-                }
+
+            } catch (ExpiredJwtException e) {
+                logger.warn("Token expirado: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Token expirado");
+                throw new BadCredentialsException("Token expirado", e);
+
+            } catch (MalformedJwtException e) {
+                logger.warn("Token malformado: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Token malformado");
+                throw new BadCredentialsException("Token malformado", e);
+
+            } catch (SignatureException e) {
+                logger.warn("Assinatura inválida: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Assinatura inválida");
+                throw new BadCredentialsException("Assinatura inválida", e);
+
+            } catch (UnsupportedJwtException e) {
+                logger.warn("Token não suportado: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Token não suportado");
+                throw new BadCredentialsException("Token não suportado", e);
+
+            } catch (IllegalArgumentException e) {
+                logger.warn("Token vazio ou inválido: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Token vazio ou inválido");
+                throw new BadCredentialsException("Token vazio ou inválido", e);
+
             } catch (AuthenticationException e) {
-                // Propaga exceções do UserDetailsService (ex.: usuário não encontrado)
-                logger.debug("Erro de autenticação: {}", e.getMessage());
-                throw e; // Vai para EntryPoint
+                logger.warn("Erro de autenticação: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Erro de autenticação");
+                throw e;
+
+            } catch (JwtException e) {
+                logger.error("Erro genérico de JWT: {}", e.getMessage());
+                request.setAttribute("jwt_error", "Erro genérico de token");
+                throw new BadCredentialsException("Erro genérico de token", e);
+
             } catch (Exception e) {
-                // Para erros inesperados, loga e propaga (pode cair em 500 via handler global)
                 logger.error("Erro inesperado no filtro JWT: {}", e.getMessage());
-                throw new ServletException("Erro no processamento do token", e);
+                request.setAttribute("jwt_error", "Erro inesperado no processamento do token");
+                throw new ServletException("Erro inesperado no processamento do token", e);
             }
+
         } else {
             logger.debug("Nenhum header Authorization encontrado");
             // Sem token: SecurityContext fica vazio, EntryPoint será chamado se endpoint protegido
         }
 
-        // Continua a cadeia de filtros
         filterChain.doFilter(request, response);
     }
 }
