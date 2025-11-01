@@ -46,6 +46,16 @@ public class UserService implements UserDetailsService {
         return UserResponseDTO.fromEntity(user);
     }
 
+    public UserResponseDTO updateUser(Integer id, UserRequestDTO userResponseDTO) {
+
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
+        user.setName(userResponseDTO.name());
+        user.setEmail(userResponseDTO.email());
+        User saved = userRepository.save(user);
+        return entityToResponse(saved);
+
+    }
+
     public UserResponseDTO findById(Integer id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
         return UserResponseDTO.fromEntity(user);
@@ -54,4 +64,21 @@ public class UserService implements UserDetailsService {
     public List<UserResponseDTO> findAll() {
         return userRepository.findAll().stream().map(UserResponseDTO::fromEntity).toList();
     }
+
+    public void deleteUserById(Integer id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("Usuário não encontrado com id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+
+
+    private User requestToEntity(UserRequestDTO userReq) {
+        return new User(userReq.name(), userReq.email(), userReq.password(), Role.ROLE_USER);
+    }
+
+    private UserResponseDTO entityToResponse(User userReq) {
+        return new UserResponseDTO(userReq.getId(), userReq.getName(), userReq.getEmail(), userReq.getRole());
+    }
+
 }
