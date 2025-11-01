@@ -67,4 +67,6 @@ public class ProductService {
         return new ProductResponseDTO(prodEnti.getId(), prodEnti.getProductName(), prodEnti.getDescription(), prodEnti.getPrice(), prodEnti.isActive(), prodEnti.getCategory());
     }
 
+
+
 }
