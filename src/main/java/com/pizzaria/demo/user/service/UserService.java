@@ -30,25 +30,23 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
+        return userRepository.findByEmailAndEnabledTrue(email).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
     }
 
 
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
-        return UserResponseDTO.
-                fromEntity(userRepository.
-                        save(new User(userRequestDTO.name(), userRequestDTO.email(), passwordEncoder.encode(userRequestDTO.password()), Role.ROLE_USER)));
+        return UserResponseDTO.fromEntity(userRepository.save(new User(userRequestDTO.name(), userRequestDTO.email(), passwordEncoder.encode(userRequestDTO.password()), Role.ROLE_USER)));
     }
 
 
     public UserResponseDTO findByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
+        User user = userRepository.findByEmailAndEnabledTrue(email).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
         return UserResponseDTO.fromEntity(user);
     }
 
     public UserResponseDTO updateUser(Integer id, UserRequestDTO userResponseDTO) {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
+        User user = userRepository.findByIdAndEnabledTrue(id).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
         user.setName(userResponseDTO.name());
         user.setEmail(userResponseDTO.email());
         User saved = userRepository.save(user);
@@ -57,19 +55,18 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponseDTO findById(Integer id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
+        User user = userRepository.findByIdAndEnabledTrue(id).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO ENCONTRADO"));
         return UserResponseDTO.fromEntity(user);
     }
 
     public List<UserResponseDTO> findAll() {
-        return userRepository.findAll().stream().map(UserResponseDTO::fromEntity).toList();
+        return userRepository.findAllByEnabledTrue().stream().map(UserResponseDTO::fromEntity).toList();
     }
 
     public void deleteUserById(Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("Usuário não encontrado com id: " + id);
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findByIdAndEnabledTrue(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com id: " + id));
+        user.setEnabled(false);
+        userRepository.save(user);
     }
 
 

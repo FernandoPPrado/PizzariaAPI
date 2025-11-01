@@ -93,9 +93,9 @@ public class UserServiceTest {
         }
 
         @Test
-        @DisplayName("DeleteDeveRetornarErroSeUsuraioNaoExistir")
-        public void deleteDeveRetornarErroSeUsuraioNaoExistir() {
-            assertThrows(Exception.class, () -> userService.deleteUserById(-1));
+        @DisplayName("DeleteDeveRetornarErroSeUsuarioNaoExistir")
+        public void deleteDeveRetornarErroSeUsuarioNaoExistir() {
+            assertThrows(EntityNotFoundException.class, () -> userService.deleteUserById(-1));
         }
 
 
