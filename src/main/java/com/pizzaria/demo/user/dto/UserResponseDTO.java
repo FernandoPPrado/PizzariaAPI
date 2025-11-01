@@ -1,12 +1,13 @@
 package com.pizzaria.demo.user.dto;
 
+import com.pizzaria.demo.user.model.Role;
 import com.pizzaria.demo.user.model.User;
 
 public record UserResponseDTO(
         Integer id,
         String name,
         String email,
-        String role
+        Role role
 ) {
 
     public static UserResponseDTO fromEntity(User user) {
@@ -14,7 +15,7 @@ public record UserResponseDTO(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getRole().name()
+                user.getRole()
         );
     }
 
