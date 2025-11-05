@@ -22,17 +22,39 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
+    @Column(nullable = false)
+    private boolean enabled;
+    @Column(nullable = false)
+    private String imageUrl;
 
 
     public Product() {
     }
 
-    public Product(String productName, String description, BigDecimal price, boolean active, Category category) {
+    public Product(String productName, String description, BigDecimal price, boolean active, Category category, String imageUrl) {
         this.productName = productName;
         this.description = description;
         this.price = price;
         this.active = active;
         this.category = category;
+        this.imageUrl = imageUrl;
+        this.enabled = true;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Integer getId() {

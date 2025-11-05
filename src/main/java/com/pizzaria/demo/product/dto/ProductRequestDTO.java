@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.NonNull;
+import org.hibernate.validator.constraints.URL;
 
 import java.math.BigDecimal;
 
@@ -21,7 +22,10 @@ public record ProductRequestDTO(
         BigDecimal price,
         boolean active,
         @NotNull
-        Category category
+        Category category,
+        @NotBlank
+        @URL
+        String imageUrl
 ) {
 
 }
