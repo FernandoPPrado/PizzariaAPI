@@ -6,6 +6,8 @@ import com.pizzaria.demo.itemProduct.model.ItemProduct;
 import com.pizzaria.demo.itemProduct.repository.ItemProductRepository;
 import com.pizzaria.demo.product.model.Product;
 import com.pizzaria.demo.product.repository.ProductRepository;
+import com.pizzaria.demo.purchase.dto.ItemProductPurchaseRequestDTO;
+import com.pizzaria.demo.purchase.dto.PurchaseRequestDTO;
 import com.pizzaria.demo.purchase.model.Purchase;
 import com.pizzaria.demo.purchase.repository.PurchaseRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -68,4 +70,14 @@ public class ItemProductService {
 
 
     }
+
+    public List<ItemProduct> createItemsForPurchase(List<ItemProductPurchaseRequestDTO> itemsDto, Purchase purchase) {
+        return itemsDto.stream().map(dto -> {
+            Product product = productRepository.findByIdAndEnabledTrue(dto.productId())
+                    .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+            return new ItemProduct(product, purchase, dto.quantity(), product.getPrice());
+        }).toList();
+    }
+
+
 }
