@@ -34,7 +34,7 @@ public class ItemProductService {
 
         Product product = productRepository.findByIdAndEnabledTrue(itemProductDTO.productId()).orElseThrow(() -> new EntityNotFoundException("PRODUTO NAO ENCONTRADO"));
         Purchase purchase = purchaseRepository.findById(itemProductDTO.purchaseId()).orElseThrow(() -> new EntityNotFoundException("COMPRA NAO LOCALIZADA"));
-        ItemProduct itemProduct = new ItemProduct(product, purchase, itemProductDTO.quantity(), itemProductDTO.unitPrice());
+        ItemProduct itemProduct = new ItemProduct(product, purchase, itemProductDTO.quantity(), product.getPrice());
         ItemProduct itemProductSaved = itemProductRepository.save(itemProduct);
         return entityToResponse(itemProductSaved);
 
