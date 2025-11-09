@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemProductService {
@@ -33,7 +35,7 @@ public class ItemProductService {
     public ItemProductResponseDTO createItemProduct(ItemProductRequestDTO itemProductDTO) {
 
         Product product = productRepository.findByIdAndEnabledTrue(itemProductDTO.productId()).orElseThrow(() -> new EntityNotFoundException("PRODUTO NAO ENCONTRADO"));
-        Purchase purchase = purchaseRepository.findById(itemProductDTO.purchaseId()).orElseThrow(() -> new EntityNotFoundException("COMPRA NAO LOCALIZADA"));
+        Purchase purchase = purchaseRepository.findByIdAndEnabledTrue(itemProductDTO.purchaseId()).orElseThrow(() -> new EntityNotFoundException("COMPRA NAO LOCALIZADA"));
         ItemProduct itemProduct = new ItemProduct(product, purchase, itemProductDTO.quantity(), product.getPrice());
         ItemProduct itemProductSaved = itemProductRepository.save(itemProduct);
         return entityToResponse(itemProductSaved);
@@ -41,7 +43,7 @@ public class ItemProductService {
     }
 
     public ItemProductResponseDTO findItemProductById(Integer id) {
-        return entityToResponse(itemProductRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ITEMPRODUCT NAO ENCONTRADO")));
+        return entityToResponse(itemProductRepository.findByIdAndEnabledTrue(id).orElseThrow(() -> new EntityNotFoundException("ITEMPRODUCT NAO ENCONTRADO")));
     }
 
 
@@ -50,33 +52,35 @@ public class ItemProductService {
     }
 
     public void deleteItemProduct(Integer id) {
-        ItemProduct itemProduct = itemProductRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ITEMPRODUCT NAO ENCONTRADO"));
+        ItemProduct itemProduct = itemProductRepository.findByIdAndEnabledTrue(id).orElseThrow(() -> new EntityNotFoundException("ITEMPRODUCT NAO ENCONTRADO"));
         itemProduct.setEnabled(false);
         itemProductRepository.save(itemProduct);
 
     }
 
     private ItemProductResponseDTO entityToResponse(ItemProduct item) {
-        return new ItemProductResponseDTO(
-                item.getId(),
-                item.getProduct().getId(),
-                item.getProduct().getProductName(),
-                item.getPurchase().getId(),
-                item.getQuantity(),
-                item.getUnitPrice(),
-                item.getSubtotal(),
-                item.getCreateAt()
-        );
+        return new ItemProductResponseDTO(item.getId(), item.getProduct().getId(), item.getProduct().getProductName(), item.getPurchase().getId(), item.getQuantity(), item.getUnitPrice(), item.getSubtotal(), item.getCreateAt());
 
 
     }
 
     public List<ItemProduct> createItemsForPurchase(List<ItemProductPurchaseRequestDTO> itemsDto, Purchase purchase) {
+
+        List<Integer> integerList = itemsDto.stream().map(ItemProductPurchaseRequestDTO::productId).toList();
+
+        List<Product> productList = productRepository.findAllByIdInAndEnabledTrue(integerList);
+
+        Map<Integer, Product> productMap = productList.stream().collect(Collectors.toMap(Product::getId, p -> p));
+
         return itemsDto.stream().map(dto -> {
-            Product product = productRepository.findByIdAndEnabledTrue(dto.productId())
-                    .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+            Product product = productMap.get(dto.productId());
+            if (product == null) {
+                throw new EntityNotFoundException("PRODUTO NAO ENCONTRADO");
+            }
+
             return new ItemProduct(product, purchase, dto.quantity(), product.getPrice());
         }).toList();
+
     }
 
 

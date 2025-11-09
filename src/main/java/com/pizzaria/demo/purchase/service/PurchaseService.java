@@ -40,7 +40,7 @@ public class PurchaseService {
     public PurchaseResponseDTO createPurchase(PurchaseRequestDTO purchaseRequestDTO) {
 
         Purchase purchase = new Purchase();
-        purchase.setUser(userRepository.findById(purchaseRequestDTO.userId()).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO LOCALIZADO")));
+        purchase.setUser(userRepository.findByIdAndEnabledTrue(purchaseRequestDTO.userId()).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO LOCALIZADO")));
 
         List<ItemProduct> itemProductList = itemProductService.createItemsForPurchase(purchaseRequestDTO.itemProduct(), purchase);
         purchase.setItems(itemProductList);
