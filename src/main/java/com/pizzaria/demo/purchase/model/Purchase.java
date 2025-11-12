@@ -43,6 +43,17 @@ public class Purchase {
         calculateTotal();
     }
 
+    @PrePersist
+    protected void onCreate() {
+        if (created == null) {
+            created = LocalDateTime.now();
+        }
+        enabled = true;
+        if (status == null) {
+            status = Status.PENDING; // ou o padrão que você quiser
+        }
+    }
+
     public Purchase() {
     }
 
