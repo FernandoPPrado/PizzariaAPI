@@ -79,7 +79,7 @@ public class ItemProductService {
             }
 
             return new ItemProduct(product, purchase, dto.quantity(), product.getPrice());
-        }).toList();
+        }).collect(Collectors.toList());
 
     }
 
