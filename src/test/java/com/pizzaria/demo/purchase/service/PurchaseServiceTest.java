@@ -60,7 +60,7 @@ public class PurchaseServiceTest {
             PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(user.getId(), List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             //act
-            PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO);
+            PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
 
             //assert
             assertEquals(purchaseResponseDTO.userId(), user.getId());
@@ -135,7 +135,7 @@ public class PurchaseServiceTest {
             PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(user.getId(), List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             //act
-            PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO);
+            PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
 
 
             Status status = purchaseService.updatePurchaseStatus(purchaseResponseDTO.purchaseId(), Status.Teste);
@@ -153,7 +153,7 @@ public class PurchaseServiceTest {
 
             PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(user.getId(), List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
-            PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO);
+            PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
 
 
             //act
@@ -175,9 +175,9 @@ public class PurchaseServiceTest {
         public void createPurchaseDeveLancarExcessaoSeUsuarioNaoExistir() {
             Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
             PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(1999, List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
-
+            User user = new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER);
             //act
-            assertThrows(EntityNotFoundException.class, () -> purchaseService.createPurchase(purchaseRequestDTO));
+            assertThrows(EntityNotFoundException.class, () -> purchaseService.createPurchase(purchaseRequestDTO, user));
 
 
         }

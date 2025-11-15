@@ -11,6 +11,7 @@ import com.pizzaria.demo.purchase.dto.PurchaseResponseDTO;
 import com.pizzaria.demo.purchase.model.Purchase;
 import com.pizzaria.demo.purchase.model.Status;
 import com.pizzaria.demo.purchase.repository.PurchaseRepository;
+import com.pizzaria.demo.user.model.User;
 import com.pizzaria.demo.user.repository.UserRepository;
 import com.pizzaria.demo.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,10 +38,10 @@ public class PurchaseService {
     }
 
 
-    public PurchaseResponseDTO createPurchase(PurchaseRequestDTO purchaseRequestDTO) {
+    public PurchaseResponseDTO createPurchase(PurchaseRequestDTO purchaseRequestDTO, User owner) {
 
         Purchase purchase = new Purchase();
-        purchase.setUser(userRepository.findByIdAndEnabledTrue(purchaseRequestDTO.userId()).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO LOCALIZADO")));
+        purchase.setUser(userRepository.findByIdAndEnabledTrue(owner.getId()).orElseThrow(() -> new EntityNotFoundException("USUARIO NAO LOCALIZADO")));
 
         List<ItemProduct> itemProductList = itemProductService.createItemsForPurchase(purchaseRequestDTO.itemProduct(), purchase);
         purchase.setItems(itemProductList);

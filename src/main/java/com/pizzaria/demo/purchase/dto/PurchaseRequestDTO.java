@@ -8,9 +8,6 @@ import java.util.List;
 public record PurchaseRequestDTO(
 
         @NotNull
-        @Positive
-        Integer userId,
-        @NotNull
         List<ItemProductPurchaseRequestDTO> itemProduct
 
 ) {

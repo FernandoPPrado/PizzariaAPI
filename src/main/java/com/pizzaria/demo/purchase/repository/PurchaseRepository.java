@@ -10,4 +10,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
     List<Purchase> findAllByUser_IdAndEnabledTrue(Integer userId);
 
     Optional<Purchase> findByIdAndEnabledTrue(Integer id);
+
+    boolean existsByIdAndUser_IdAndEnabledTrue(Integer purchaseId, Integer id);
 }
