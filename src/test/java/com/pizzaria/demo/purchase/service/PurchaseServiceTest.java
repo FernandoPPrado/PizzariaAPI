@@ -57,7 +57,7 @@ public class PurchaseServiceTest {
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
             Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
 
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(user.getId(), List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             //act
             PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
@@ -132,7 +132,7 @@ public class PurchaseServiceTest {
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
             Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
 
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(user.getId(), List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO( List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             //act
             PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
@@ -151,7 +151,7 @@ public class PurchaseServiceTest {
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
             Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
 
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(user.getId(), List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO( List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
 
@@ -174,7 +174,7 @@ public class PurchaseServiceTest {
         @Test
         public void createPurchaseDeveLancarExcessaoSeUsuarioNaoExistir() {
             Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(1999, List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO( List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
             User user = new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER);
             //act
             assertThrows(EntityNotFoundException.class, () -> purchaseService.createPurchase(purchaseRequestDTO, user));

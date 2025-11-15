@@ -19,12 +19,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableMethodSecurity // habilita @PreAuthorize, @PostAuthorize, etc.
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UserService userService;
     private final AuthTokenFilter authTokenFilter;
     private final PasswordEncoder passwordEncoder; // vem do PasswordConfig
+
+    public SecurityConfig(UserService userService, AuthTokenFilter authTokenFilter, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.authTokenFilter = authTokenFilter;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
