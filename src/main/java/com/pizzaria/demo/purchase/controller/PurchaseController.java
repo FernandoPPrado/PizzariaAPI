@@ -1,5 +1,7 @@
 package com.pizzaria.demo.purchase.controller;
 
+import com.pizzaria.demo.mercadoPago.dto.MercadoPagoPaymentLinkDTO;
+import com.pizzaria.demo.mercadoPago.service.MercadoPagoService;
 import com.pizzaria.demo.purchase.dto.PurchaseRequestDTO;
 import com.pizzaria.demo.purchase.dto.PurchaseResponseDTO;
 import com.pizzaria.demo.purchase.service.PurchaseService;
@@ -17,17 +19,20 @@ import java.util.List;
 public class PurchaseController {
 
     private final PurchaseService purchaseService;
+    private final MercadoPagoService mercadoPagoService;
 
-
-    public PurchaseController(PurchaseService purchaseService) {
+    public PurchaseController(PurchaseService purchaseService, MercadoPagoService mercadoPagoService) {
         this.purchaseService = purchaseService;
+        this.mercadoPagoService = mercadoPagoService;
     }
 
     //seLogadoE#IdEIgualDoUser
     @PostMapping(path = "/create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<PurchaseResponseDTO> createPurchase(@RequestBody @Valid PurchaseRequestDTO purchaseRequestDTO, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(purchaseService.createPurchase(purchaseRequestDTO, user));
+    public ResponseEntity<MercadoPagoPaymentLinkDTO> createPurchase(@RequestBody @Valid PurchaseRequestDTO purchaseRequestDTO, @AuthenticationPrincipal User user) {
+        PurchaseResponseDTO responseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
+        MercadoPagoPaymentLinkDTO linkPaymentDTO = mercadoPagoService.createPaymentForPurchase(responseDTO.purchaseId());
+        return ResponseEntity.ok(linkPaymentDTO);
     }
 
     @GetMapping(path = "/")

@@ -34,6 +34,9 @@ public class Purchase {
     @Column(nullable = false)
     private LocalDateTime created;
 
+    @Column(unique = true, nullable = true)
+    private Long paymentId;
+
 
     public Purchase(User user, List<ItemProduct> items) {
         this.user = user;
@@ -55,6 +58,14 @@ public class Purchase {
     }
 
     public Purchase() {
+    }
+
+    public Long getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
     }
 
     public Integer getId() {
