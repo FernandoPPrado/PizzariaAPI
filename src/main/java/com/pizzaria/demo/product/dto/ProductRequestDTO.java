@@ -22,10 +22,7 @@ public record ProductRequestDTO(
         BigDecimal price,
         boolean active,
         @NotNull
-        Category category,
-        @NotBlank
-        @URL
-        String imageUrl
+        Category category
 ) {
 
 }

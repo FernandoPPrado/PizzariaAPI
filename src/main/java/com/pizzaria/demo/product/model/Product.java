@@ -24,20 +24,20 @@ public class Product {
     private Category category;
     @Column(nullable = false)
     private boolean enabled;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String imageUrl;
 
 
     public Product() {
     }
 
-    public Product(String productName, String description, BigDecimal price, boolean active, Category category, String imageUrl) {
+    public Product(String productName, String description, BigDecimal price, boolean active, Category category) {
         this.productName = productName;
         this.description = description;
         this.price = price;
         this.active = active;
         this.category = category;
-        this.imageUrl = imageUrl;
+        this.imageUrl = null;
         this.enabled = true;
     }
 

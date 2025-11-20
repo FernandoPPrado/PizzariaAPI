@@ -53,7 +53,7 @@ public class ItemProductServiceTest {
         public void createItemProductDeveRetornarSucesso() {
             //Arrange
             User user = userRepository.save(new User("UserTest", "EmailTest", "SenhaTeste", Role.ROLE_USER));
-            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA, "IMG"));
+            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA));
             Purchase purchase = purchaseRepository.save(new Purchase(user, new ArrayList<>()));
             ItemProductRequestDTO itemDto = new ItemProductRequestDTO(product.getId(), purchase.getId(), 3, new BigDecimal("1.2"));
             //Act
@@ -68,7 +68,8 @@ public class ItemProductServiceTest {
         @Test
         public void findItemProductRetornaDTOCorreto() {
             User user = userRepository.save(new User("UserTest", "EmailTest", "SenhaTeste", Role.ROLE_USER));
-            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA, "IMG"));
+            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA));
+            ;
             Purchase purchase = purchaseRepository.save(new Purchase(user, new ArrayList<>()));
             ItemProduct saved = itemProductRepository.save(new ItemProduct(product, purchase, 2, new BigDecimal("1.2")));
 
@@ -84,7 +85,7 @@ public class ItemProductServiceTest {
         @Test
         public void getAllItemPtoductByPurchaseIdRetornaListaCorreta() {
             User user = userRepository.save(new User("UserTest", "EmailTest", "SenhaTeste", Role.ROLE_USER));
-            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA, "IMG"));
+            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA));
             Purchase purchase = purchaseRepository.save(new Purchase(user, new ArrayList<>()));
             ItemProduct saved = itemProductRepository.save(new ItemProduct(product, purchase, 2, new BigDecimal("1.2")));
             ItemProduct saved2 = itemProductRepository.save(new ItemProduct(product, purchase, 3, new BigDecimal("1.3")));
@@ -106,7 +107,7 @@ public class ItemProductServiceTest {
             //Arrange
 
             User user = userRepository.save(new User("UserTest", "EmailTest", "SenhaTeste", Role.ROLE_USER));
-            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA, "IMG"));
+            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA));
             Purchase purchase = purchaseRepository.save(new Purchase(user, new ArrayList<>()));
 
             ItemProduct saved = itemProductRepository.save(new ItemProduct(product, purchase, 2, new BigDecimal("1.2")));
@@ -124,8 +125,8 @@ public class ItemProductServiceTest {
             User user = userRepository.save(new User("UserTest", "EmailTest", "SenhaTeste", Role.ROLE_USER));
             Purchase purchase = purchaseRepository.save(new Purchase(user, new ArrayList<>()));
 
-            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(1), true, Category.PIZZA, "IMG"));
-            Product product2 = productRepository.save(new Product("Teste2", "TesteDesc2", new BigDecimal(2), true, Category.PIZZA, "IMG2"));
+            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA));
+            Product product2 = productRepository.save(new Product("Teste2", "TesteDesc2", new BigDecimal(2), true, Category.PIZZA));
 
             ItemProductPurchaseRequestDTO itemPurchaseDTO = new ItemProductPurchaseRequestDTO(product.getId(), 2);
             ItemProductPurchaseRequestDTO itemPurchaseDTO2 = new ItemProductPurchaseRequestDTO(product2.getId(), 1);
@@ -185,7 +186,7 @@ public class ItemProductServiceTest {
             User user = userRepository.save(new User("UserTest", "EmailTest", "SenhaTeste", Role.ROLE_USER));
             Purchase purchase = purchaseRepository.save(new Purchase(user, new ArrayList<>()));
 
-            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(1), true, Category.PIZZA, "IMG"));
+            Product product = productRepository.save(new Product("Teste", "TesteDesc", new BigDecimal(123.2), true, Category.PIZZA));
 
             ItemProductPurchaseRequestDTO itemPurchaseDTO = new ItemProductPurchaseRequestDTO(product.getId(), 2);
             ItemProductPurchaseRequestDTO itemPurchaseDTO2 = new ItemProductPurchaseRequestDTO(8, 1);

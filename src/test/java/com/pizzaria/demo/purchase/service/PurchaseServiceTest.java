@@ -55,7 +55,7 @@ public class PurchaseServiceTest {
             //Arrange
 
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
-            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
+            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA));
 
             PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
@@ -72,7 +72,7 @@ public class PurchaseServiceTest {
         @Test
         public void getPurchaseByIdDeveRetornarCompraCorretamente() {
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
-            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
+            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA));
             Purchase purchase = new Purchase();
             purchase.setUser(user);
             ItemProduct itemProduct = new ItemProduct(product1, purchase, 1, new BigDecimal("1.2"));
@@ -97,7 +97,7 @@ public class PurchaseServiceTest {
         public void listPurchaseByUserDeveRetornarListaDeCompras() {
 
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
-            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
+            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA));
             Purchase purchase = new Purchase();
             purchase.setUser(user);
             ItemProduct itemProduct = new ItemProduct(product1, purchase, 1, new BigDecimal("1.2"));
@@ -130,9 +130,9 @@ public class PurchaseServiceTest {
         public void updatePurchaseStatusDeveAtualizarStatusOk() {
 
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
-            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
+            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA));
 
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO( List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             //act
             PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
@@ -149,9 +149,9 @@ public class PurchaseServiceTest {
         public void deletePurchaseDeveDarSoftDelete() {
 
             User user = userRepository.save(new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER));
-            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
+            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA));
 
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO( List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
 
             PurchaseResponseDTO purchaseResponseDTO = purchaseService.createPurchase(purchaseRequestDTO, user);
 
@@ -173,8 +173,8 @@ public class PurchaseServiceTest {
 
         @Test
         public void createPurchaseDeveLancarExcessaoSeUsuarioNaoExistir() {
-            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA, "Link"));
-            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO( List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
+            Product product1 = productRepository.save(new Product("PROD1", "DESCRIP", new BigDecimal("1.2"), true, Category.PIZZA));
+            PurchaseRequestDTO purchaseRequestDTO = new PurchaseRequestDTO(List.of(new ItemProductPurchaseRequestDTO(product1.getId(), 3)));
             User user = new User("TESTE", "TESTE@GMAIL.COM", "TESTE", Role.ROLE_USER);
             //act
             assertThrows(EntityNotFoundException.class, () -> purchaseService.createPurchase(purchaseRequestDTO, user));

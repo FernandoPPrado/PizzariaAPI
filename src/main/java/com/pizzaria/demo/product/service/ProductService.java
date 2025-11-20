@@ -56,7 +56,6 @@ public class ProductService {
             product.setPrice(productRequestDTO.price());
             product.setActive(productRequestDTO.active());
             product.setCategory(productRequestDTO.category());
-            product.setImageUrl(productRequestDTO.imageUrl());
 
             log.debug("Salvando produto atualizado id = {}", id);
 
@@ -160,7 +159,7 @@ public class ProductService {
 
 
     private Product requestToEntity(ProductRequestDTO prodReq) {
-        return new Product(prodReq.productName(), prodReq.description(), prodReq.price(), prodReq.active(), prodReq.category(), prodReq.imageUrl());
+        return new Product(prodReq.productName(), prodReq.description(), prodReq.price(), prodReq.active(), prodReq.category());
     }
 
     private ProductResponseDTO entityToResponse(Product prodEnti) {

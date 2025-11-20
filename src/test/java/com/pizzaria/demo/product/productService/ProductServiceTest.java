@@ -36,21 +36,21 @@ public class ProductServiceTest {
 
         @Test
         public void criarProdutoDeveRetornarDtoQuandoProdutoCriado() {
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
             ProductResponseDTO productResponseDTO = productService.createProduct(productRequestDTO);
             assertEquals(productResponseDTO.description(), productRequestDTO.description());
             assertEquals(productResponseDTO.price(), productRequestDTO.price());
             assertEquals(productResponseDTO.active(), productRequestDTO.active());
             assertEquals(productResponseDTO.category(), productRequestDTO.category());
-            assertEquals(productResponseDTO.imageUrl(), productRequestDTO.imageUrl());
+            assertNull(productResponseDTO.imageUrl());
 
         }
 
         @Test
         public void updateProductDeveRetornarDtoAtualizado() {
 
-            ProductRequestDTO productToUpdate = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
-            ProductRequestDTO productUpdate = new ProductRequestDTO("Atualizado", "Atualizado", new BigDecimal("20000.00"), false, Category.BEBIDA, "Testado.com");
+            ProductRequestDTO productToUpdate = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
+            ProductRequestDTO productUpdate = new ProductRequestDTO("Atualizado", "Atualizado", new BigDecimal("20000.00"), false, Category.BEBIDA);
 
             ProductResponseDTO productSaved = productService.createProduct(productToUpdate);
             ProductResponseDTO productUpdated = productService.updateProduct(productSaved.id(), productUpdate);
@@ -59,14 +59,14 @@ public class ProductServiceTest {
             assertNotEquals(productSaved.price(), productUpdated.price());
             assertNotEquals(productSaved.active(), productUpdated.active());
             assertNotEquals(productSaved.category(), productUpdated.category());
-            assertNotEquals(productSaved.imageUrl(), productUpdated.imageUrl());
+            assertEquals(productSaved.imageUrl(), null);
 
         }
 
         @Test
         public void deleteDeveMarcarEnabledComoFalso() {
 
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
             ProductResponseDTO productSaved = productService.createProduct(productRequestDTO);
 
             assertTrue(productRepository.findById(productSaved.id()).orElseThrow().isEnabled());
@@ -78,7 +78,7 @@ public class ProductServiceTest {
         @Test
         public void serActiveDevePersistirCorretamente() {
 
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
             ProductResponseDTO productSaved = productService.createProduct(productRequestDTO);
 
             assertTrue(productRepository.findById(productSaved.id()).orElseThrow().isActive());
@@ -90,7 +90,7 @@ public class ProductServiceTest {
         @Test
         public void getProductDeveRetornarDTOCorretoProduto() {
 
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
             ProductResponseDTO productSaved = productService.createProduct(productRequestDTO);
 
             ProductResponseDTO productFinded = productService.getProductById(productSaved.id());
@@ -106,8 +106,8 @@ public class ProductServiceTest {
         @Test
         public void getAllProductDeveRetornarDTOCorretoProduto() {
 
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
-            ProductRequestDTO productRequestDTO2 = new ProductRequestDTO("Teste2", "Teste2", new BigDecimal("1.220"), true, Category.PIZZA, "youtube2.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
+            ProductRequestDTO productRequestDTO2 = new ProductRequestDTO("Teste2", "Teste2", new BigDecimal("1.220"), true, Category.PIZZA);
             ProductResponseDTO productSaved = productService.createProduct(productRequestDTO);
             ProductResponseDTO productSaved2 = productService.createProduct(productRequestDTO2);
             productService.deleteProduct(productSaved2.id());
@@ -131,8 +131,8 @@ public class ProductServiceTest {
 
         @Test
         public void updateProductDeveRetornarErroSeNaoExistir() {
-            ProductRequestDTO productToUpdate = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
-            ProductRequestDTO productUpdate = new ProductRequestDTO("Atualizado", "Atualizado", new BigDecimal("20000.00"), false, Category.BEBIDA, "Testado.com");
+            ProductRequestDTO productToUpdate = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
+            ProductRequestDTO productUpdate = new ProductRequestDTO("Atualizado", "Atualizado", new BigDecimal("20000.00"), false, Category.BEBIDA);
             ProductResponseDTO productSaved = productService.createProduct(productToUpdate);
             assertThrows(EntityNotFoundException.class,
                     () -> productService.updateProduct(productSaved.id() * -1, productUpdate));
@@ -149,7 +149,7 @@ public class ProductServiceTest {
 
         @Test
         public void serActiveNaoDevePersistirCorretamenteSeDeletado() {
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
             ProductResponseDTO productSaved = productService.createProduct(productRequestDTO);
             assertTrue(productRepository.findById(productSaved.id()).orElseThrow().isActive());
             productService.deleteProduct(productSaved.id());
@@ -159,7 +159,7 @@ public class ProductServiceTest {
         @Test
         public void getProductDeveRetornarErroSeProdutoNaoExistir() {
 
-            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA, "youtube.com");
+            ProductRequestDTO productRequestDTO = new ProductRequestDTO("Teste", "Teste", new BigDecimal("1.20"), true, Category.PIZZA);
             ProductResponseDTO productSaved = productService.createProduct(productRequestDTO);
             productService.deleteProduct(productSaved.id());
             assertThrows(EntityNotFoundException.class, () -> productService.getProductById(productSaved.id()));
