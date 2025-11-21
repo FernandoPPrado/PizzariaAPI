@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/products")
+@RequestMapping(path = "/product")
 public class ProductController {
 
     private final ProductService productService;
