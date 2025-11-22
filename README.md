@@ -78,6 +78,7 @@ Estados suportados:
 
 ## 📁 Estrutura do Projeto
 
+```
 src/main/java/com/pizzaria/demo
 ├── auth/
 ├── jwt/
@@ -89,6 +90,7 @@ src/main/java/com/pizzaria/demo
 ├── mercadopago/
 ├── image/
 └── config/
+```
 
 ---
 
