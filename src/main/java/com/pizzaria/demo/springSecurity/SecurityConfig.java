@@ -42,24 +42,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // API REST + JWT -> sem CSRF, sem sessão
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_MATCHERS).permitAll() // libera rotas públicas
-                        .anyRequest().authenticated()                 // resto precisa de JWT
+                        // estáticos comuns (caso use)
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/favicon.ico",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/webjars/**",
+                                "/assets/**"
+                        ).permitAll()
+
+                        // rotas públicas da API
+                        .requestMatchers(PUBLIC_MATCHERS).permitAll()
+
+                        // swagger
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // qualquer coisa diferente disso precisa de JWT
+                        .anyRequest().authenticated()
                 )
 
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(authenticationEntryPoint()) // trata 401
+                        .authenticationEntryPoint(authenticationEntryPoint())
                 )
 
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
-
-                // desabilita mecanismos de login padrão do Spring Security
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable());
 

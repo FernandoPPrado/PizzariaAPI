@@ -30,7 +30,7 @@ public class PurchaseController {
 
     //seLogadoE#IdEIgualDoUser
     @PostMapping(path = "/create")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<MercadoPagoPaymentLinkDTO> createPurchase(@RequestBody @Valid PurchaseRequestDTO purchaseRequestDTO, @AuthenticationPrincipal User user) {
 
         log.info("Recebida requisição para criar purchase para userId = {}", user.getId());
@@ -43,7 +43,7 @@ public class PurchaseController {
     }
 
     @GetMapping(path = "/")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<PurchaseResponseDTO>> listPurchaseByUser(@AuthenticationPrincipal User user) {
         log.info("Recebida requisição para listar purchases do usuário userId = {}", user.getId());
         List<PurchaseResponseDTO> purchaseListDTO = purchaseService.listPurchaseByUser(user.getId());
