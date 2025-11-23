@@ -183,11 +183,12 @@ pizzaria.images-dir=images
 pizzaria.images.path=/caminho/para/pasta/images
 ```
 Rodando:
+```
 mvn clean install
 mvn spring-boot:run
 
 http://localhost:8080
-http://localhost:8080
+```
 
 🧪 Testes
 
