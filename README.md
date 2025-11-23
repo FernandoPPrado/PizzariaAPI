@@ -46,9 +46,11 @@ src/main/java/com/pizzaria/demo
 Roles:
 - USER
 - ADMIN
-Segurança específica:
-Purchase só pode ser vista pelo dono ou admin:
+- Segurança específica:
+- Purchase só pode ser vista pelo dono ou admin:
+```
 @PreAuthorize("@purchaseSecurity.isOwner(#id, authentication) or hasRole('ADMIN')")
+```
 
 💳 Integração com Mercado Pago
 
@@ -157,13 +159,15 @@ Retorna: UserResponseDTO
 📃 Swagger- Docs JSON: /v3/api-docs
 - UI: /swagger-ui.html
 
-🚀 Como rodar localmenteRequisitos:
+🚀 Como rodar localmente 
+- Requisitos:
 - Java 21
 - Maven
 - MySQL 8+
-application.properties exemplo:
+- application.properties exemplo:
 
-```server.port=8080
+```
+server.port=8080
 
 spring.datasource.url=jdbc:mysql://localhost:3306/pizzariaapi
 spring.datasource.username=root
@@ -206,6 +210,11 @@ Incluem:
 - 	Integração com transportadoras
 - 	Métricas / Observabilidade
 - 	Deploy com banco gerenciado
+
+🚀 Deploy:
+- O deploy será disponibilizado em breve.  
+Como alternativa, o repositório contém instruções completas para rodar a API localmente.
+O foco atual é finalizar integração de módulos e preparar o ambiente de produção.
 
 👨‍💻 Autor
 Fernando Prado
