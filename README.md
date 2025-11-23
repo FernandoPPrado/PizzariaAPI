@@ -1,82 +1,28 @@
-# 🍕 PizzariaAPI — Spring Boot + JWT + Mercado Pago  
-API completa para um MVP de sistema de pedidos de pizzaria, com autenticação JWT, integração com Mercado Pago, upload de imagens, CRUDs essenciais, logs profissionais e documentação via Swagger.
+# 🍕 PizzariaAPI
+
+API REST para gerenciamento de usuários, produtos e compras de uma pizzaria, com autenticação JWT, integração com Mercado Pago e upload de imagens de produtos.  
+
+Projeto criado como MVP real e também como portfólio profissional, focado em código limpo, segurança e boa observabilidade (logs).
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## 🛠️ Tech Stack
 
-- **Java 21**
-- **Spring Boot 3.5.7**
-- **Spring Web (MVC)**
-- **Spring Security + JWT**
-- **Spring Data JPA**
-- **MySQL**
-- **Lombok**
-- **Mercado Pago Integration (Checkout Pro + Webhook)**
-- **Upload de Imagens via MultipartFile**
-- **Swagger (springdoc-openapi 2.6.0)**
-
----
-
-## 📌 Funcionalidades
-
-### 🔐 Autenticação
-- Login via JWT  
-- Proteção de endpoints com `@PreAuthorize`  
-- `AuthTokenFilter` validando tokens em cada request  
-- Segurança configurada para API REST (stateless)
-
-### 👤 Usuários
-- Cadastro e login  
-- Soft-delete  
-- Busca por ID  
-- Logs detalhados
-
-### 🍕 Produtos
-- CRUD completo  
-- Upload de imagens  
-- Armazenamento local (`/images/product-<id>.png`)  
-
-### 🛒 Compras (Purchase)
-- Criação de compras  
-- Cálculo automático de total  
-- Associação de itens (ItemProduct)  
-- Validação de preços direto do banco (não vem do front)  
-- Controle de estoque  
-- Consulta por usuário  
-- Logs completos (info, warn, debug)
-
-### 💳 Mercado Pago
-Fluxo completo:
-1. Usuário cria a compra  
-2. API cria a **Preference** no Mercado Pago  
-3. Recebe o **payment_link**  
-4. Webhook atualiza o status da compra automaticamente  
-5. Idempotência garantida  
-6. Armazena o `paymentId`  
-
-Estados suportados:
-- `PENDING`
-- `APPROVED`
-- `REJECTED`
-- `CANCELED`
-- `COMPLETED`
-
-### 🖼️ Sistema de Imagens
-- Upload com `MultipartFile`  
-- Salvamento local  
-- URL automática no Produto  
-- Suporta atualização da imagem  
-
-### 📦 Estrutura de Logs
-- `INFO`, `WARN`, `ERROR`, `DEBUG` separados por cores  
-- Logs em todos os serviços  
-- Sem exposição de stacktrace para o cliente  
-- `BasicErrorController` configurado
+- **Java 21**  
+- **Spring Boot 3.5.7**  
+  - Spring Web  
+  - Spring Security (JWT)  
+  - Spring Data JPA  
+  - Validation  
+- **Banco de dados:** MySQL 8+  
+- **JWT (JSON Web Token)**  
+- **Integração com Mercado Pago**  
+- **Upload de imagens com MultipartFile**  
+- **Swagger / OpenAPI**
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📂 Estrutura do Projeto
 
 ```
 src/main/java/com/pizzaria/demo
@@ -86,127 +32,186 @@ src/main/java/com/pizzaria/demo
 ├── user/
 ├── product/
 ├── purchase/
-├── itemproduct/
-├── mercadopago/
+├── itemProduct/
+├── mercadoPago/
 ├── image/
 └── config/
 ```
 
----
+🔐 Segurança
+- Login com JWT: /auth/login
+- Enviar sempre: Authorization: Bearer <token>
+- Controle via @PreAuthorize
+- Soft delete para usuário e produto
+Roles:
+- USER
+- ADMIN
+Segurança específica:
+Purchase só pode ser vista pelo dono ou admin:
+@PreAuthorize("@purchaseSecurity.isOwner(#id, authentication) or hasRole('ADMIN')")
 
-## 📄 Documentação da API (Swagger)
+💳 Integração com Mercado Pago
 
-Acesse: http://localhost:8080/swagger-ui.html
+Fluxo completo:
+- Usuário chama POST /purchase/create
+- API cria a Purchase
+- API chama Mercado Pago gerando o link
+- Usuário é redirecionado para o checkout
+- Mercado Pago chama o webhook:
+
+POST: 
+/mercado-pago/webhook?secret=SEU_SECRET
+
+DTO:
+```
+public record MercadoPagoWebhookDTO(
+        Long id,
+        String type,
+        String action,
+        Data data
+) {
+    public record Data(String id) {}
+}
+
+```
 
 
-### Segurança no Swagger
+🖼️ Módulo de Imagens
+Permite:
+- Upload de imagem
+- Atualização da imagem
+- Remoção da imagem
 
-Após fazer login na rota `/auth/login`, copie o token JWT e clique em **Authorize**:
+Configuração:
+```
+pizzaria.images-dir=images
+pizzaria.images.path=/caminho/para/pasta/images
+```
 
-Bearer SEU_TOKEN_AQUI
+📚 Endpoints
 
+🔑 Autenticação (/auth)
+- POST /auth/login
 
-A partir disso, todas as rotas protegidas funcionam no Swagger.
+Público
+```
+{
+  "email": "user@teste.com",
+  "password": "123456"
+}
+```
+- Retorna: JWT (string)
+  
+- POST /auth/create
+Público
+Cria usuário
+Retorna: UserResponseDTO
 
----
+👤 Usuários (/users)
+-GET /users/{id} → Admin ou usuário dono
+- GET /users → Apenas admin
+- PUT /users/{id} → Admin ou dono
+- DELETE /users/{id} → Admin ou dono (soft delete)
 
-## 🔧 Como rodar o projeto
+🍕 Produtos (/product)- GET /product/{id} → Autenticado
+- GET /product → Autenticado
+- POST /product → Admin
+- PUT /product/{id} → Admin
+- DELETE /product/{id} → Admin (soft delete)
+- PATCH /product/{id}/status?active=truefalse → Admin
 
-### 1. Configurar o banco
-Crie um banco MySQL: pizzaria_db
+🖼️ Imagens (/images)- POST /images/product/{prodId} → Admin (upload)
+- PATCH /images/product/{prodId} → Admin (atualizar)
+- DELETE /images/product/{prodId} → Admin (remover)
+🧾 Compras (/purchase)- POST /purchase/create → Roles: USER / ADMIN
 
-### 2. Configurar o `application.properties`
+```
+{
+  "itemProduct": [
+    {
+      "productId": 1,
+      "quantity": 2
+    }
+  ]
+}
+```
 
-spring.datasource.url=jdbc:mysql://localhost:3306/pizzaria_db
+- Retorna:
+
+```
+{
+  "url": "https://www.mercadopago..."
+}
+```
+- GET /purchase/ → USER / ADMIN
+- GET /purchase/{id} → Dono ou admin
+- PUT /purchase/{id}/cancel → Dono ou admin (soft delete)
+
+💳 Webhook (/mercado-pago/webhook)
+
+- POST /mercado-pago/webhook?secret=SEU_SECRET
+- Validado com SECRET configurado
+- Recebe notificações do Mercado Pago
+- Processa status da purchase
+
+📃 Swagger- Docs JSON: /v3/api-docs
+- UI: /swagger-ui.html
+
+🚀 Como rodar localmenteRequisitos:
+- Java 21
+- Maven
+- MySQL 8+
+application.properties exemplo:
+
+```server.port=8080
+
+spring.datasource.url=jdbc:mysql://localhost:3306/pizzariaapi
 spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
+spring.datasource.password=123456
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=false
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
-Mercado Pago (suas credenciais)
+jwt.secret=MinhaChaveSecretaMaiorQue32Caracteres123456
+jwt.expiration=86400000
 
-mercadopago.access-token=SEU_TOKEN_MP
-mercadopago.notification-url=https://sua-url/webhook
+webhook.secret=SEU_SECRET
 
-### 3. Rodar com Maven
+pizzaria.images-dir=images
+pizzaria.images.path=/caminho/para/pasta/images
+```
+Rodando:
+mvn clean install
+mvn spring-boot:run
 
----
+http://localhost:8080
+http://localhost:8080
 
-## 🔐 Segurança (Resumo)
+🧪 Testes
 
-O projeto usa:
-- JWT assinado  
-- Filtro: `AuthTokenFilter`  
-- Stateless session  
-- Swagger liberado  
-- Webhook do Mercado Pago liberado  
-- Tudo mais autenticado via Bearer Token  
+Incluem:
+• 	PurchaseService
+• 	ProductService
+• 	ItemProductService
+• 	UserService
+• 	Regras de soft delete
+• 	Lógica de preços no servidor
 
----
+🧭 Próximos Passos
+• 	Front-end próprio (em andamento)
+• 	Geração de NF-e
+• 	Integração com transportadoras
+• 	Métricas / Observabilidade
+• 	Deploy com banco gerenciado
 
-## 💳 Fluxo de Pagamento (Mercado Pago)
-
-1. Front chama `/purchase/create`  
-2. API salva a compra (status: PENDING)  
-3. API cria Preference no Mercado Pago  
-4. Devolve o `payment_link` para o front  
-5. Usuário paga  
-6. Mercado Pago envia **webhook**  
-7. API atualiza o status da compra
-
-Webhook público: POST /mercado-pago/webhook
-
----
-
-## 🖼️ Upload de Imagens
-
-Rota: POST /product/{id}/image
-
-Internamente o serviço salva como: /images/product-<id>.png
-
-
-E atualiza o campo `imageUrl` no Produto.
-
----
-
-## 🧪 Testes
-
-O projeto inclui:
-- Testes básicos com Spring Boot Test  
-- Testes para serviços  
-- Testes para camada de segurança  
-- Validação de regras de negócio  
-
----
-
-## 🛠️ TODO (MVP)
-
-- Redução de estoque ao finalizar compra  
-- Página de sucesso/erro/pending no front  
-- Deploy (Fly.io ou Railway)  
-- Integração com front React (em desenvolvimento)
-
----
-
-## 🤝 Contribuição
-
-1. Fork  
-2. Crie uma branch feature  
-3. Commit  
-4. Pull Request  
-
----
-
-## 📄 Licença
-
-MIT.  
-Use, modifique e aprenda livremente.
+👨‍💻 Autor
+Fernando Prado
+• 	GitHub: FernandoPPrado
+• LinkedIn: fernando-prado21
 
 
 
 
-
-
-
-
+  
