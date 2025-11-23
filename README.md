@@ -193,24 +193,24 @@ http://localhost:8080
 🧪 Testes
 
 Incluem:
-• 	PurchaseService
-• 	ProductService
-• 	ItemProductService
-• 	UserService
-• 	Regras de soft delete
-• 	Lógica de preços no servidor
+- 	PurchaseService
+- 	ProductService
+- 	ItemProductService
+- 	UserService
+- 	Regras de soft delete
+- 	Lógica de preços no servidor
 
 🧭 Próximos Passos
-• 	Front-end próprio (em andamento)
-• 	Geração de NF-e
-• 	Integração com transportadoras
-• 	Métricas / Observabilidade
-• 	Deploy com banco gerenciado
+-	Front-end próprio (em andamento)
+- 	Geração de NF-e
+- 	Integração com transportadoras
+- 	Métricas / Observabilidade
+- 	Deploy com banco gerenciado
 
 👨‍💻 Autor
 Fernando Prado
-• 	GitHub: FernandoPPrado
-• LinkedIn: fernando-prado21
+- GitHub: FernandoPPrado
+- LinkedIn: fernando-prado21
 
 
 
